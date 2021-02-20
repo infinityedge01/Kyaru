@@ -7,7 +7,3 @@
 由于搞不到公会ID，所以收藏功能不能做了。
 
 demo page : https://kyaru.infedg.xyz
-
-未来可能会出台服和日服查询
-
-
