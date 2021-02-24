@@ -201,7 +201,7 @@ var app = new Vue({
             }        
             $('.ui.form').addClass("loading");
             this.allow = false;
-            this.searchData['filename'] = 'current/' + this.selectedDate + this.selectedTime;
+            this.searchData['filename'] = 'tw/' + this.selectedServer + '/' + this.selectedDate + this.selectedTime;
             this.searchData['search'] = this.searchContents;
             this.searchData['page'] = 0;
             this.searchData['page_limit'] = this.pageinfo.limit
