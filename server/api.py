@@ -52,7 +52,7 @@ def search_scoreline():
         return jsonify(error_file_not_found)
     except:
         return jsonify({"state": "fail", "error_code": -1, "error_title": "Error - Unexcepted Error", "error_message": sys.exc_info()[0]})
-    df = readfile[filename]
+    df = readfile[filename].fillna(value = 'null')
     try:
         dfa = df[df['rank'].isin([1, 2, 3, 20, 50, 150, 300, 700, 1300, 2500, 4000, 6000])]
     except:
@@ -80,7 +80,7 @@ def search_by_clan_name():
         return jsonify(error_file_not_found)
     except:
         return jsonify({"state": "fail", "error_code": -1, "error_title": "Error - Unexcepted Error", "error_message": sys.exc_info()[0]})
-    df = readfile[filename]
+    df = readfile[filename].fillna(value = 'null')
     try:
         dfa = df[df.clan_name.str.contains(data['search'], regex = True)]
     except:
@@ -116,7 +116,7 @@ def search_by_leader_name():
         return jsonify(error_file_not_found)
     except:
         return jsonify({"state": "fail", "error_code": -1, "error_title": "Error - Unexcepted Error", "error_message": sys.exc_info()[0]})
-    df = readfile[filename]
+    df = readfile[filename].fillna(value = 'null')
     try:
         dfa = df[df.leader_name.str.contains(data['search'], regex = True)]
     except:
@@ -152,7 +152,7 @@ def search_by_rank():
         return jsonify(error_file_not_found)
     except:
         return jsonify({"state": "fail", "error_code": -1, "error_title": "Error - Unexcepted Error", "error_message": sys.exc_info()[0]})
-    df = readfile[filename]
+    df = readfile[filename].fillna(value = 'null')
     if data['search'] == '':
         dfa = df
     else:
