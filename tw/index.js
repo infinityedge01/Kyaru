@@ -11,6 +11,9 @@ var app = new Vue({
             ts: 0,
         },
         dateTimeData: {},
+        ServerInfo: {"1": "美食殿堂", "2": "真步真步王国", "3": "破晓之星", "4": "小小甜心"},
+        selectedServer: "1",
+        TimeData:{},
         selectedDate: "",
         selectedTime: "",
         inputtype: "text",
@@ -110,13 +113,15 @@ var app = new Vue({
         },
         processTimeData(data) {        
             this.dateTimeData = data["data"];
+            this.TimeData = this.dateTimeData[this.selectedServer]
+            this.unWatchSelectedServer = this.$watch('selectedServer', this.selectedServerChangeHandler)
             this.unWatchSelectedDate = this.$watch('selectedDate', this.selectedDateChangeHandler)
             $('.ui.form').removeClass("loading");
             this.lastTime();
         },
         loadTime() {
             $.ajax({
-                url: this.apiUrl + "/current/getalltime",
+                url: this.apiUrl + "/current/getalltime/tw",
                 type: "GET",
                 dataType: "JSON",
                 async: true,
@@ -127,9 +132,9 @@ var app = new Vue({
         },
         lastTime() {
             this.unWatchSelectedDate()
-            keys = Object.keys(this.dateTimeData);
+            keys = Object.keys(this.TimeData);
             date = keys[keys.length - 1];
-            time = this.dateTimeData[date][this.dateTimeData[date].length - 1];
+            time = this.TimeData[date][this.TimeData[date].length - 1];
             this.selectedDate = date;
             this.selectedTime = time;
             $('#selectedDate').dropdown('set selected', date);
@@ -219,7 +224,7 @@ var app = new Vue({
             }        
             $('.ui.form').addClass("loading");
             this.allow = false;
-            this.searchData['filename'] = 'current/' + this.selectedDate + this.selectedTime;
+            this.searchData['filename'] = 'tw/' + this.selectedServer + '/' + this.selectedDate + this.selectedTime;
             this.searchData['search'] = this.searchContents;
             this.searchData['page'] = 0;
             this.searchData['page_limit'] = this.pageinfo.limit
@@ -283,9 +288,20 @@ var app = new Vue({
         getUrlKey(name, url) {
             return decodeURIComponent((new RegExp("[?|&]" + name + "=" + "([^&;]+?)(&|#|;|$)").exec(url) || [, ""])[1].replace(/\+/g, "%20")) || null;
         },
+        selectedServerChangeHandler(val) {
+            this.selectedServer = val;
+            this.TimeData = this.dateTimeData[this.selectedServer]
+            for(var key in this.TimeData){
+                this.selectedDate = key;
+            }
+            $('#selectedDate').dropdown('set selected', this.selectedDate);
+            this.selectedTime = this.TimeData[date][this.TimeData[date].length - 1];
+            $('#selectedTime').dropdown('set selected', this.selectedTime);
+        },
         selectedDateChangeHandler(val) {
             this.selectedDate = val;
-            this.selectedTime = this.dateTimeData[this.selectedDate][0];
+            this.selectedTime = this.TimeData[date][this.TimeData[date].length - 1];
+            $('#selectedTime').dropdown('set selected', this.selectedTime);
         },
     },
 });

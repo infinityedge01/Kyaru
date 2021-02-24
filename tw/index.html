@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>PCR 台服公会战排名查询</title>
+    <link rel="shortcut icon" type="image/x-icon" href="../107831.ico" />
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <!--script data-ad-client="ca-pub-8278251579038034" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script-->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-171663021-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag("js", new Date());
+        gtag("config", "UA-171663021-1");
+    </script>
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i["GoogleAnalyticsObject"] = r;
+            (i[r] =
+                i[r] ||
+                function () {
+                    (i[r].q = i[r].q || []).push(arguments);
+                }),
+                (i[r].l = 1 * new Date());
+            (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m);
+        })(window, document, "script", "https://www.google-analytics.com/analytics.js", "ga");
+        ga("create", "UA-171663021-1", "auto");
+    </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+
+    <style id="font-ui">
+        .ui-font,
+        body,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        .ui.button,
+        .ui.text.container,
+        .ui.header,
+        .ui.input>input,
+        .ui.list .list>.item .header,
+        .ui.list>.item .header,
+        .ui.steps .step .title,
+        .ui.form input:not([type]),
+        .ui.form input[type="date"],
+        .ui.form input[type="datetime-local"],
+        .ui.form input[type="email"],
+        .ui.form input[type="number"],
+        .ui.form input[type="password"],
+        .ui.form input[type="search"],
+        .ui.form input[type="tel"],
+        .ui.form input[type="time"],
+        .ui.form input[type="text"],
+        .ui.form input[type="file"],
+        .ui.form input[type="url"],
+        .ui.input textarea,
+        .ui.form textarea,
+        .ui.menu,
+        .ui.message .header,
+        .ui.cards>.card>.content>.header,
+        .ui.card>.content>.header,
+        .ui.items>.item>.content>.header,
+        .ui.statistics .statistic>.value,
+        .ui.statistic>.value,
+        .ui.statistics .statistic>.label,
+        .ui.statistic>.label,
+        .ui.accordion .title:not(.ui),
+        .ui.modal>.header,
+        .ui.popup>.header,
+        .ui.search>.results .result .title,
+        .ui.search>.results>.message .header,
+        .ui.category.search>.results .category>.name {
+            font-family: "Lato", "Noto Sans CJK SC", "Source Han Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft Yahei", "WenQuanYi Micro Hei", "Droid Sans Fallback", sans-serif;
+        }
+    </style>
+
+</head>
+
+<body style="padding-top: 50px;">
+    <div id="PCRClanBattleSearcher">
+        <div class="ui borderless top fixed menu">
+            <div class="ui container menu_container">
+
+                <a class="item" href = "https://kyaru.infedg.xyz/tw"> <img src="../107831.ico"> &#12288;PCR 台服公会战排名查询</a>
+                <div class="right menu">
+                    <a class="item active current_rank"><i aria-hidden="true" class="search icon"></i>查询当期</a>
+                    <a class="item history_rank disabled"><i aria-hidden="true" class="calendar icon"></i>查询历史</a>
+                    <a class="item" href = "https://github.com/infinityedge01/Kyaru"><i aria-hidden="true" class="github icon"></i>项目链接</a>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="ui container" id="main">
+            <form class="ui form">
+                <div class="ui error message hidden" id="error_messagebox"><i class="close icon"></i>
+                    <div class="header" id="error_title"></div>
+                    <p id="error_message"></p>
+                </div>
+                <div class="ui warning message hidden" id="warning_messagebox"><i class="close icon"></i>
+                    <div class="header" id="warning_title"></div>
+                    <p id="warning_message"></p>
+                </div>
+
+                <div>
+                    <h4 class="ui dividing header">查询区服/时间</h4>
+                    <div class="field">
+                        <div class="ui grid">
+                            <div class="four wide column">
+                                <select class="ui fluid selection dropdown" id="selectedServer" v-model="selectedServer">
+                                    <option v-for="(val, key, i) in dateTimeData" :value="key">{{ServerInfo[key]}}</option>
+                                </select>
+                            </div>
+                            <div class="four wide column">
+                                <select class="ui fluid selection dropdown" id="selectedDate" v-model="selectedDate">
+                                    <option v-for="(val, key, i) in TimeData" :value="key">{{parseDate(key)}}</option>
+                                </select>
+                            </div>
+                            <div class="four wide column">
+                                <select class="ui fluid selection dropdown" id="selectedTime" v-model="selectedTime">
+                                    <option v-for="val in TimeData[selectedDate]" :value="val">{{parseTime(val)}}</option>
+                                </select>
+                            </div>
+                            <div class="four wide column">
+                                <div class="ui fluid primary button" @click="lastTime()"> 选取最新数据 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <h4 class="ui dividing header">查询内容</h4>
+                <div class="ui grid">
+                    <div class="twelve wide column">
+                        <div class="ui fluid action input">
+                            <input type="text" placeholder="查询内容（支持正则表达式，留空为不加限制）" id = "searchContents" v-model = "searchContents">
+                            <select class="ui basic floating selection dropdown" id = "selectedType" v-model = "selectedType">
+                                <option v-for="(val, key) in selectTypeInfo" :value="key"> {{val}} </option>
+                            </select>
+                            <div type="submit" class="ui button" @click="searchDataFirstTime()">查询</div>
+                        </div>
+                    </div>
+                    <div class="four wide column">
+                        <div class="ui fluid primary button" @click="searchScoreLine()"> 查档线 </div>
+                    </div>
+                </div>
+                <table class="ui selectable  table">
+                    <thead>
+                        <tr>
+                            <th class="one wide">排名</th>
+                            <th class="four wide">公会名</th>
+                            <th class="one wide">人数</th>
+                            <th class="three wide">会长名</th>
+                            <th class="two wide">分数</th>
+                            <th class="one wide">周目</th>
+                            <th class="one wide">Boss</th>
+                            <th class="two wide">剩余血量</th>
+                            <th class="one wide">上期</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for = "(val, key) in showData" :key = "key">
+                            <td>{{val.rank}}</td>
+                            <td>{{val.clan_name}}</td>
+                            <td>{{val.member_num}}</td>
+                            <td>{{val.leader_name}}</td>
+                            <td>{{val.damage}}</td>
+                            <td>{{val.lap}}</td>
+                            <td>{{val.boss_id}}</td>
+                            <td>{{val.remain}}</td>
+                            <td>{{val.grade_rank}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div style="text-align: center;">
+                    <div class="ui pagination menu" style="box-shadow: none; ">
+                        <div class="ui icon item button ranklist" id="page_prev" v-bind:class="{'disabled' : pageinfo.prevDisabled}" @click="addPage(-1)">
+                            <i class="left chevron icon"></i>
+                        </div>
+                        <div class="ui item button ranklist" v-bind:class="{'disabled' : pageinfo.maxPage == 0}" @click="transPage">{{pageinfo.page + 1}} / {{pageinfo.maxPage}}</div>
+                        <div class="ui icon item button ranklist" id="page_next" v-bind:class="{'disabled' : pageinfo.nextDisabled}" @click="addPage(1)">
+                            <i class="right chevron icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.1.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+    <script src="tw/index.js"></script>
+
+</body>
+
+</html>

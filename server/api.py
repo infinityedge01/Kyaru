@@ -1,7 +1,8 @@
-from flask import Flask, request, jsonify
+from flask import Flask, abort, request, jsonify
 import json
 import os
 import sys
+import datetime
 import pandas as pd
  
 app = Flask(__name__)
@@ -14,6 +15,19 @@ error_rank_error = {"state": "fail", "error_code": 4, "error_title": "Error - In
 error_page_error = {"state": "fail", "error_code": 10, "error_title": "Error - Input Page Error", "error_message": "查询页码有误，请重新查询"}
 
 readfile = {}
+servetime = {}
+@app.before_request
+def before_request():
+    if request.method == 'OPTIONS':
+        return
+    ip = request.headers.get("X-Real-Ip")
+    print(ip)
+    currtime = datetime.datetime.now()
+    if ip in servetime:
+        lasttime = servetime[ip]
+        if (currtime - lasttime) < datetime.timedelta(milliseconds = 500):
+            abort(403)
+    servetime[ip] = currtime
 
 @app.after_request
 def cors(environ):
@@ -161,6 +175,25 @@ def search_by_rank():
     ret_dict = {"state": "success", "total" : dfa.shape[0], "data": data_dict}
     return jsonify(ret_dict)
 
+@app.route('/current/getalltime/tw',methods=['get'])
+def getalltime_tw():
+    data_dict = {}
+    for i in range(1, 5):
+        si = str(i)
+        lst = os.listdir('tw/' + si)
+        data_dict[si] = {}
+        for x in lst:
+            date = x[:8]
+            time = x[8:12]
+            if date not in data_dict[si]:
+                data_dict[si][date] = []
+            data_dict[si][date].append(time)
+        for key in data_dict[si]:
+            data_dict[si][key] = sorted(data_dict[si][key])
+
+    ret_dict = {"state": "success", "data": data_dict}
+    return jsonify(ret_dict)
+
 @app.route('/current/getalltime',methods=['get'])
 def getalltime():
     lst = os.listdir('current')
@@ -171,22 +204,14 @@ def getalltime():
         if date not in data_dict:
             data_dict[date] = []
         data_dict[date].append(time)
+    for key in data_dict:
+        data_dict[key] = sorted(data_dict[key])
+
     ret_dict = {"state": "success", "data": data_dict}
     #把区获取到的数据转为JSON格式。
     return jsonify(ret_dict)
     #返回JSON数据。
-
-@app.route('/add/student/',methods=['post'])
-def add_stu():
-    if not request.data:   #检测是否有数据
-        return ('fail')
-    student = request.data.decode('utf-8')
-    #获取到POST过来的数据，因为我这里传过来的数据需要转换一下编码。根据晶具体情况而定
-    student_json = json.loads(student)
-    #把区获取到的数据转为JSON格式。
-    return jsonify(student_json)
-    #返回JSON数据。
  
 if __name__ == '__main__':
-    app.run(port=5088)
+    app.run(host = '0.0.0.0', port=5088)
     #这里指定了地址和端口号。
