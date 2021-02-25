@@ -89,11 +89,19 @@
         <div class="ui borderless top fixed menu">
             <div class="ui container menu_container">
 
-                <a class="item" href = "https://kyaru.infedg.xyz/tw"> <img src="../107831.ico"> &#12288;PCR 台服公会战排名查询</a>
+                <a class="item" href = "https://kyaru.infedg.xyz/tw"> <img src="../107831.ico"> &#12288;{{title[lang]}}</a>
                 <div class="right menu">
-                    <a class="item active current_rank"><i aria-hidden="true" class="search icon"></i>查询当期</a>
-                    <a class="item history_rank disabled"><i aria-hidden="true" class="calendar icon"></i>查询历史</a>
-                    <a class="item" href = "https://github.com/infinityedge01/Kyaru"><i aria-hidden="true" class="github icon"></i>项目链接</a>
+                    <a class="item active current_rank"><i aria-hidden="true" class="search icon"></i>{{text_dict.search_current_rank[lang]}}</a>
+                    <a class="item history_rank disabled"><i aria-hidden="true" class="calendar icon"></i>{{text_dict.search_history[lang]}}</a>
+                    <a class="item" href = "https://github.com/infinityedge01/Kyaru"><i aria-hidden="true" class="github icon"></i>{{text_dict.github_link[lang]}}</a>
+                    <div class="item" >
+                        <div class="ui floating dropdown">
+                            {{lang_list[lang]}} <i class="dropdown icon" v></i>
+                            <div class="menu">
+                              <div class="item" v-for="(val, key, i) in lang_list" v-bind:class = "{'active selected' : lang == key}" @click = "lang = key">{{val}}</option></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -110,12 +118,12 @@
                 </div>
 
                 <div>
-                    <h4 class="ui dividing header">查询区服/时间</h4>
+                    <h4 class="ui dividing header">{{text_dict.select_server_and_time[lang]}}</h4>
                     <div class="field">
                         <div class="ui grid">
                             <div class="four wide column">
                                 <select class="ui fluid selection dropdown" id="selectedServer" v-model="selectedServer">
-                                    <option v-for="(val, key, i) in dateTimeData" :value="key">{{ServerInfo[key]}}</option>
+                                    <option v-for="(val, key, i) in dateTimeData" :value="key">{{ServerInfo[key][lang]}}</option>
                                 </select>
                             </div>
                             <div class="four wide column">
@@ -129,38 +137,38 @@
                                 </select>
                             </div>
                             <div class="four wide column">
-                                <div class="ui fluid primary button" @click="lastTime()"> 选取最新数据 </div>
+                                <div class="ui fluid primary button" @click="lastTime()"> {{text_dict.select_last_time[lang]}} </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <h4 class="ui dividing header">查询内容</h4>
+                <h4 class="ui dividing header">{{text_dict.search_contents[lang]}}</h4>
                 <div class="ui grid">
                     <div class="twelve wide column">
                         <div class="ui fluid action input">
-                            <input type="text" placeholder="查询内容（支持正则表达式，留空为不加限制）" id = "searchContents" v-model = "searchContents">
+                            <input type="text" :placeholder="text_dict.search_placeholder[lang]" id = "searchContents" v-model = "searchContents">
                             <select class="ui basic floating selection dropdown" id = "selectedType" v-model = "selectedType">
-                                <option v-for="(val, key) in selectTypeInfo" :value="key"> {{val}} </option>
+                                <option v-for="(val, key) in selectTypeInfo" :value="key"> {{val[lang]}} </option>
                             </select>
-                            <div type="submit" class="ui button" @click="searchDataFirstTime()">查询</div>
+                            <div type="submit" class="ui button" @click="searchDataFirstTime()">{{text_dict.search[lang]}}</div>
                         </div>
                     </div>
                     <div class="four wide column">
-                        <div class="ui fluid primary button" @click="searchScoreLine()"> 查档线 </div>
+                        <div class="ui fluid primary button" @click="searchScoreLine()"> {{text_dict.search_scoreline[lang]}} </div>
                     </div>
                 </div>
                 <table class="ui selectable  table">
                     <thead>
                         <tr>
-                            <th class="one wide">排名</th>
-                            <th class="four wide">公会名</th>
-                            <th class="one wide">人数</th>
-                            <th class="three wide">会长名</th>
-                            <th class="two wide">分数</th>
-                            <th class="one wide">周目</th>
-                            <th class="one wide">Boss</th>
-                            <th class="two wide">剩余血量</th>
-                            <th class="one wide">上期</th>
+                            <th class="one wide">{{text_dict.data_header.rank[lang]}}</th>
+                            <th class="four wide">{{text_dict.data_header.clan_name[lang]}}</th>
+                            <th class="one wide">{{text_dict.data_header.member_num[lang]}}</th>
+                            <th class="three wide">{{text_dict.data_header.leader_name[lang]}}</th>
+                            <th class="two wide">{{text_dict.data_header.damage[lang]}}</th>
+                            <th class="one wide">{{text_dict.data_header.lap[lang]}}</th>
+                            <th class="one wide">{{text_dict.data_header.boss_id[lang]}}</th>
+                            <th class="two wide">{{text_dict.data_header.remain[lang]}}</th>
+                            <th class="one wide">{{text_dict.data_header.grade_rank[lang]}}</th>
                         </tr>
                     </thead>
                     <tbody>

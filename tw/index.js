@@ -3,22 +3,131 @@ jQuery.support.cors = true;
 var app = new Vue({
     el: "#PCRClanBattleSearcher",
     data: {
-        errorOccured: false,
-        showData: {
-            header: ["排名", "公会名", "人数", "会长名", "分数", "周目", "Boss", "剩余血量", "评级"],
-            time: "",
-            body: [],
-            ts: 0,
+        lang_list : {
+            "zh-cn" : "简体中文",
+            "zh-tw" : "繁體中文",
         },
+        lang : "zh-cn",
+        title : {
+            "zh-cn": "PCR 台服公会战排名查询",
+            "zh-tw": "PCR 台版戰隊賽排名查詢",  
+        },
+        text_dict : {
+            "search_current_rank" :{
+                "zh-cn": "查询当期",
+                "zh-tw": "查詢當期",
+            },
+            "search_history" :{
+                "zh-cn": "查询历史",
+                "zh-tw": "查詢歷史",
+            },
+            "github_link" :{
+                "zh-cn": "项目链接",
+                "zh-tw": "項目連結",
+            },
+            "select_server_and_time" :{
+                "zh-cn": "查询区服/时间",
+                "zh-tw": "查詢伺服器/時間",
+            },
+            "select_last_time" :{
+                "zh-cn": "选取最新数据",
+                "zh-tw": "選取最新數據",
+            },
+            "search_contents" :{
+                "zh-cn": "查询内容",
+                "zh-tw": "查詢内容",
+            },
+            "search_placeholder" :{
+                "zh-cn": "查询内容（支持正则表达式，留空为不加限制）",
+                "zh-tw": "查詢内容（支援正則表達式，留空為不加限制）",
+            },
+            "search" :{
+                "zh-cn": "查询",
+                "zh-tw": "查詢",
+            },
+            "search_scoreline" :{
+                "zh-cn": "查档线",
+                "zh-tw": "查檔線",
+            },
+            "data_header":{
+                "rank":{
+                    "zh-cn" : "排名",
+                    "zh-tw" : "排名",
+                },
+                "clan_name":{
+                    "zh-cn" : "公会名",
+                    "zh-tw" : "戰隊名",
+                },
+                "member_num":{
+                    "zh-cn" : "人数",
+                    "zh-tw" : "人數",
+                },
+                "leader_name":{
+                    "zh-cn" : "会长名",
+                    "zh-tw" : "隊長名",
+                },
+                "damage":{
+                    "zh-cn" : "分数",
+                    "zh-tw" : "分數",
+                },
+                "lap":{
+                    "zh-cn" : "周目",
+                    "zh-tw" : "周目",
+                },
+                "boss_id":{
+                    "zh-cn" : "Boss",
+                    "zh-tw" : "Boss",
+                },
+                "remain":{
+                    "zh-cn" : "剩余血量",
+                    "zh-tw" : "剩餘血量",
+                },
+                "grade_rank":{
+                    "zh-cn" : "上期",
+                    "zh-tw" : "上期",
+                },
+            }
+        },
+        errorOccured: false,
         dateTimeData: {},
-        ServerInfo: {"1": "美食殿堂", "2": "真步真步王国", "3": "破晓之星", "4": "小小甜心"},
+        ServerInfo: {
+            "1": {
+                "zh-cn": "美食殿堂",
+                "zh-tw": "美食殿堂",
+            },
+            "2": {
+                "zh-cn": "真步真步王国",
+                "zh-tw": "真步真步王國",
+            }, 
+            "3": {
+                "zh-cn": "破晓之星",
+                "zh-tw": "破曉之星",
+            }, 
+            "4": {
+                "zh-cn": "小小甜心",
+                "zh-tw": "小小甜心",
+            },
+        },
         selectedServer: "1",
         TimeData:{},
         selectedDate: "",
         selectedTime: "",
         inputtype: "text",
         searchContents: "",
-        selectTypeInfo: {"1": "排名", "2": "公会名", "3": "会长名"},
+        selectTypeInfo: {
+            "1": {
+                "zh-cn": "排名",
+                "zh-tw": "排名",
+            },
+            "2": {
+                "zh-cn": "公会名",
+                "zh-tw": "戰隊名",
+            },
+            "3": {
+                "zh-cn": "会长名",
+                "zh-tw": "隊長名",
+            },
+        },
         selectedType: "1",
         searchurl: "",
         searchData:{},
@@ -60,21 +169,20 @@ var app = new Vue({
         },
     },
     watch: {
-        
+        lang: function (val) {
+            this.lang = val;
+            document.title = this.title[this.lang];
+        },
     },
     mounted() {
         $('.ui.dropdown').dropdown();
         $('.ui.form').addClass("loading");
-        let type = this.getUrlKey("type", window.location.href);
-        let data = this.getUrlKey("data", window.location.href);
-        if (type != null && data != null) {
-            this.selected = type;
-            this.selectdata = data;
-            setTimeout(() => {
-                this.search();
-            }, 300);
-            return;
+        lang_list = Object.keys(this.lang_list);
+        curr_lang = navigator.language.toLowerCase();
+        if(lang_list.includes(curr_lang)){
+            this.lang = curr_lang;
         }
+        
         $(document).ajaxSend(function (ev, xhr, settings) {
             xhr.setRequestHeader("Custom-Source", "Kyaru");
         });
@@ -90,12 +198,16 @@ var app = new Vue({
         },
         serverError(xhr, state, errorThrown) {
             //$(".search").button("reset");
+            error_msg_text = {
+                "zh-cn": "无法连接到服务器，请刷新后重试",
+                "zh-tw": "無法連接到伺服器，請重新載入後重試",
+            };
             $('.ui.form').removeClass("loading");
             $('.button').addClass("disabled");
             $("#error_messagebox").removeClass('hidden');
             if (xhr.responseJSON == undefined) {
                 $("#error_title").text("Error - Connected Failed");
-                $("#error_message").text("无法连接到服务器，请刷新后重试");
+                $("#error_message").text(error_msg_text[this.lang]);
             }else{
                 alert(xhr.responseJSON.msg);
             }
@@ -158,10 +270,10 @@ var app = new Vue({
             setTimeout(() => {this.allow = true;}, 1000);
         },
         parseDate(str){
-            return str.substr(0, 4) + '年' + str.substr(4, 2) + '月' + str.substr(6, 2) + '日';
+            return str.substr(0, 4) + '/' + str.substr(4, 2) + '/' + str.substr(6, 2);
         },
         parseTime(str){
-            return str.substr(0, 2) + '时' + str.substr(2, 2) + '分';
+            return str.substr(0, 2) + ':' + str.substr(2, 2);
         },
         processData(data){
             if(data['state'] != 'success'){
@@ -181,9 +293,17 @@ var app = new Vue({
             setTimeout(() => {this.allow = true;}, 1000);
         },
         operationTooFast(){
+            warning_title = {
+                "zh-cn": "你的操作太快了",
+                "zh-tw": "你的操作太快了",
+            };
+            warning_message = {
+                "zh-cn": "休息一下再试试吧",
+                "zh-tw": "休息一下再試試吧",
+            };
             $("#warning_messagebox").removeClass('hidden');
-            $("#warning_title").text("你的操作太快了");
-            $("#warning_message").text("休息一下再试试吧");
+            $("#warning_title").text(warning_title[this.lang]);
+            $("#warning_message").text(warning_message[this.lang]);
             $("#warning_messagebox").show();
             $('.message .close')
                 .on('click', function () {
@@ -279,7 +399,11 @@ var app = new Vue({
             this.searchDataPage(page);
         },
         transPage() {
-            var p = prompt("请输入要跳转的页码");
+            message = {
+                "zh-cn": "请输入要跳转的页码",
+                "zh-tw": "請輸入要跳轉的頁碼"
+            };
+            var p = prompt(message[this.lang]);
             if (p != null) {
                 var g = parseInt(p);
                 if(!isNaN(g)) this.setPage(g);
