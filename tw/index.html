@@ -89,17 +89,29 @@
         <div class="ui borderless top fixed menu">
             <div class="ui container menu_container">
 
-                <a class="item" href = "https://kyaru.infedg.xyz/tw"> <img src="../107831.ico"> &#12288;{{title[lang]}}</a>
+                <a class="item" href="https://kyaru.infedg.xyz/tw"> <img src="../107831.ico">
+                    &#12288;{{title[lang]}}</a>
                 <div class="right menu">
-                    <a class="item active current_rank"><i aria-hidden="true" class="search icon"></i>{{text_dict.search_current_rank[lang]}}</a>
-                    <a class="item history_rank disabled"><i aria-hidden="true" class="calendar icon"></i>{{text_dict.search_history[lang]}}</a>
-                    <a class="item" href = "https://github.com/infinityedge01/Kyaru"><i aria-hidden="true" class="github icon"></i>{{text_dict.github_link[lang]}}</a>
-                    <div class="item" >
-                        <div class="ui floating dropdown">
-                            {{lang_list[lang]}} <i class="dropdown icon" v></i>
-                            <div class="menu">
-                              <div class="item" v-for="(val, key, i) in lang_list" v-bind:class = "{'active selected' : lang == key}" @click = "lang = key">{{val}}</option></div>
-                            </div>
+                    <a class="item active current_rank"><i aria-hidden="true"
+                            class="search icon"></i>{{text_dict.search_current_rank[lang]}}</a>
+                    <a class="item history_rank disabled"><i aria-hidden="true"
+                            class="calendar icon"></i>{{text_dict.search_history[lang]}}</a>
+                    <a class="item" href="https://github.com/infinityedge01/Kyaru"><i aria-hidden="true"
+                            class="github icon"></i>{{text_dict.github_link[lang]}}</a>
+                    <div class="ui pointing dropdown link item">
+                        <i aria-hidden="true" class="comment icon"></i> {{text_dict.feedback[lang]}}
+                        <i class="dropdown icon"></i>
+                        <div class="menu">
+                            <a class="item" href = "https://github.com/infinityedge01/Kyaru/issues">GitHub</a>
+                            <a class="item" href = "https://nga.178.com/read.php?tid=25674067">NGA</a>
+                            <a class="item" href = "mailto:infinityedge@pku.edu.cn">E-mail</a>
+                        </div>
+                    </div>
+                    <div class="ui pointing dropdown link item">
+                        <span class="text">{{lang_list[lang]}}</span>
+                        <i class="dropdown icon"></i>
+                        <div class="menu">
+                            <div class="item" v-for="(val, key, i) in lang_list" v-bind:class = "{'active selected' : lang == key}" @click = "lang = key">{{val}}</div>
                         </div>
                     </div>
                 </div>
@@ -117,13 +129,15 @@
                     <p id="warning_message"></p>
                 </div>
 
-                <div>
+                <div v-if = "update">
                     <h4 class="ui dividing header">{{text_dict.select_server_and_time[lang]}}</h4>
                     <div class="field">
                         <div class="ui grid">
                             <div class="four wide column">
-                                <select class="ui fluid selection dropdown" id="selectedServer" v-model="selectedServer">
-                                    <option v-for="(val, key, i) in dateTimeData" :value="key">{{ServerInfo[key][lang]}}</option>
+                                <select class="ui fluid selection dropdown" id="selectedServer"
+                                    v-model="selectedServer">
+                                    <option v-for="(val, key, i) in dateTimeData" :value="key">{{ServerInfo[key][lang]}}
+                                    </option>
                                 </select>
                             </div>
                             <div class="four wide column">
@@ -133,28 +147,35 @@
                             </div>
                             <div class="four wide column">
                                 <select class="ui fluid selection dropdown" id="selectedTime" v-model="selectedTime">
-                                    <option v-for="val in TimeData[selectedDate]" :value="val">{{parseTime(val)}}</option>
+                                    <option v-for="val in TimeData[selectedDate]" :value="val">{{parseTime(val)}}
+                                    </option>
                                 </select>
                             </div>
                             <div class="four wide column">
-                                <div class="ui fluid primary button" @click="lastTime()"> {{text_dict.select_last_time[lang]}} </div>
+                                <div class="ui fluid primary button" @click="lastTime()">
+                                    {{text_dict.select_last_time[lang]}} </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <h4 class="ui dividing header">{{text_dict.search_contents[lang]}}</h4>
-                <div class="ui grid">
-                    <div class="twelve wide column">
-                        <div class="ui fluid action input">
-                            <input type="text" :placeholder="text_dict.search_placeholder[lang]" id = "searchContents" v-model = "searchContents">
-                            <select class="ui basic floating selection dropdown" id = "selectedType" v-model = "selectedType">
-                                <option v-for="(val, key) in selectTypeInfo" :value="key"> {{val[lang]}} </option>
-                            </select>
-                            <div type="submit" class="ui button" @click="searchDataFirstTime()">{{text_dict.search[lang]}}</div>
+
+                    <h4 class="ui dividing header">{{text_dict.search_contents[lang]}}</h4>
+                    <div class="ui grid">
+                        <div class="twelve wide column">
+                            <div class="ui fluid action input">
+                                <input type="text" :placeholder="text_dict.search_placeholder[lang]" id="searchContents"
+                                    v-model="searchContents">
+                                <select class="ui basic floating selection dropdown" id="selectedType"
+                                    v-model="selectedType">
+                                    <option v-for="(val, key) in selectTypeInfo" :value="key"> {{val[lang]}} </option>
+                                </select>
+                                <div type="submit" class="ui primary button" @click="searchDataFirstTime()">
+                                    {{text_dict.search[lang]}}</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="four wide column">
-                        <div class="ui fluid primary button" @click="searchScoreLine()"> {{text_dict.search_scoreline[lang]}} </div>
+                        <div class="four wide column">
+                            <div class="ui fluid primary button" @click="searchScoreLine()">
+                                {{text_dict.search_scoreline[lang]}} </div>
+                        </div>
                     </div>
                 </div>
                 <table class="ui selectable  table">
@@ -172,7 +193,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for = "(val, key) in showData" :key = "key">
+                        <tr v-for="(val, key) in showData" :key="key">
                             <td>{{val.rank}}</td>
                             <td>{{val.clan_name}}</td>
                             <td>{{val.member_num}}</td>
@@ -187,11 +208,14 @@
                 </table>
                 <div style="text-align: center;">
                     <div class="ui pagination menu" style="box-shadow: none; ">
-                        <div class="ui icon item button ranklist" id="page_prev" v-bind:class="{'disabled' : pageinfo.prevDisabled}" @click="addPage(-1)">
+                        <div class="ui icon item button ranklist" id="page_prev"
+                            v-bind:class="{'disabled' : pageinfo.prevDisabled}" @click="addPage(-1)">
                             <i class="left chevron icon"></i>
                         </div>
-                        <div class="ui item button ranklist" v-bind:class="{'disabled' : pageinfo.maxPage == 0}" @click="transPage">{{pageinfo.page + 1}} / {{pageinfo.maxPage}}</div>
-                        <div class="ui icon item button ranklist" id="page_next" v-bind:class="{'disabled' : pageinfo.nextDisabled}" @click="addPage(1)">
+                        <div class="ui item button ranklist" v-bind:class="{'disabled' : pageinfo.maxPage == 0}"
+                            @click="transPage">{{pageinfo.page + 1}} / {{pageinfo.maxPage}}</div>
+                        <div class="ui icon item button ranklist" id="page_next"
+                            v-bind:class="{'disabled' : pageinfo.nextDisabled}" @click="addPage(1)">
                             <i class="right chevron icon"></i>
                         </div>
                     </div>

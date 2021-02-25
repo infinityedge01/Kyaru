@@ -25,6 +25,10 @@ var app = new Vue({
                 "zh-cn": "项目链接",
                 "zh-tw": "項目連結",
             },
+            "feedback" :{
+                "zh-cn": "意见反馈",
+                "zh-tw": "意見回饋",
+            },
             "select_server_and_time" :{
                 "zh-cn": "查询区服/时间",
                 "zh-tw": "查詢伺服器/時間",
@@ -128,7 +132,7 @@ var app = new Vue({
                 "zh-tw": "隊長名",
             },
         },
-        selectedType: "1",
+        selectedType: "2",
         searchurl: "",
         searchData:{},
         showData:{},
@@ -158,6 +162,7 @@ var app = new Vue({
         proTableData: [],
         favSelected: [],
         serverMsg: [],
+        update : true,
     },
     computed: {
         selectRange() {
@@ -172,6 +177,13 @@ var app = new Vue({
         lang: function (val) {
             this.lang = val;
             document.title = this.title[this.lang];
+            this.update = false;
+            this.$nextTick(() => {
+                this.update = true;
+                this.$nextTick(() => {
+                    $('.ui.dropdown').dropdown();
+                });
+            });
         },
     },
     mounted() {
@@ -189,6 +201,7 @@ var app = new Vue({
         setTimeout(() => {
             this.loadTime();
         }, 300);
+        this.WarningMessage();
     },
     methods: {
         getClanBattlePhase(zm) {
@@ -222,6 +235,28 @@ var app = new Vue({
                 ;
             this.errorOccured = true;
             return;
+        },
+        WarningMessage(){
+            warning_title = {
+                "zh-cn": "数据异常说明",
+                "zh-tw": "數據異常説明",
+            };
+            warning_message = {
+                "zh-cn": "此前由于数据配置错误，导致35周目后没有切换至四阶段，从而周目与 Boss 编号等信息计算出错，自 2021/2/25 20:30 后的数据已恢复正常。",
+                "zh-tw": "此前由於數據配置錯誤，導致35周目後沒有切換至四階段，從而周目與 Boss 編號等信息計算出錯，自 2021/2/25 20:30 後的數據已恢復正常。",
+            };
+            $("#warning_messagebox").removeClass('hidden');
+            $("#warning_title").text(warning_title[this.lang]);
+            $("#warning_message").text(warning_message[this.lang]);
+            $("#warning_messagebox").show();
+            $('.message .close')
+                .on('click', function () {
+                    $(this)
+                        .closest('.message')
+                        .fadeOut();
+                        ;
+                })
+                ;
         },
         processTimeData(data) {        
             this.dateTimeData = data["data"];
