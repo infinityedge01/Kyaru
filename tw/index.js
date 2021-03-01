@@ -190,7 +190,14 @@ var app = new Vue({
         $('.ui.dropdown').dropdown();
         $('.ui.form').addClass("loading");
         lang_list = Object.keys(this.lang_list);
-        curr_lang = navigator.language.toLowerCase();
+        var type = navigator.appName;
+        if (type == "Netscape"){
+        　　var lang = navigator.language;
+        }else{
+        　　var lang = navigator.userLanguage;
+    　　};
+        var curr_lang = lang.toLowerCase();
+        if(curr_lang == 'zh-hk') curr_lang = 'zh-tw';
         if(lang_list.includes(curr_lang)){
             this.lang = curr_lang;
         }
@@ -201,7 +208,7 @@ var app = new Vue({
         setTimeout(() => {
             this.loadTime();
         }, 300);
-        this.WarningMessage();
+        //this.WarningMessage();
     },
     methods: {
         getClanBattlePhase(zm) {
