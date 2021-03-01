@@ -10,20 +10,20 @@ var app = new Vue({
         lang : "zh-cn",
         title : {
             "zh-cn": "PCR 台服公会战排名查询",
-            "zh-tw": "PCR 台版戰隊賽排名查詢",  
+            "zh-tw": "公連台版戰隊競賽排名查詢",  
         },
         text_dict : {
             "search_current_rank" :{
                 "zh-cn": "查询当期",
-                "zh-tw": "查詢當期",
+                "zh-tw": "查詢本期",
             },
             "search_history" :{
                 "zh-cn": "查询历史",
-                "zh-tw": "查詢歷史",
+                "zh-tw": "查詢記錄",
             },
             "github_link" :{
                 "zh-cn": "项目链接",
-                "zh-tw": "項目連結",
+                "zh-tw": "專案連結",
             },
             "feedback" :{
                 "zh-cn": "意见反馈",
@@ -35,7 +35,7 @@ var app = new Vue({
             },
             "select_last_time" :{
                 "zh-cn": "选取最新数据",
-                "zh-tw": "選取最新數據",
+                "zh-tw": "選取最新資料",
             },
             "search_contents" :{
                 "zh-cn": "查询内容",
@@ -43,7 +43,7 @@ var app = new Vue({
             },
             "search_placeholder" :{
                 "zh-cn": "查询内容（支持正则表达式，留空为不加限制）",
-                "zh-tw": "查詢内容（支援正則表達式，留空為不加限制）",
+                "zh-tw": "查詢内容（支援正規表示式，留白為不加限制）",
             },
             "search" :{
                 "zh-cn": "查询",
@@ -76,7 +76,7 @@ var app = new Vue({
                 },
                 "lap":{
                     "zh-cn" : "周目",
-                    "zh-tw" : "周目",
+                    "zh-tw" : "週目",
                 },
                 "boss_id":{
                     "zh-cn" : "Boss",
@@ -213,7 +213,7 @@ var app = new Vue({
             //$(".search").button("reset");
             error_msg_text = {
                 "zh-cn": "无法连接到服务器，请刷新后重试",
-                "zh-tw": "無法連接到伺服器，請重新載入後重試",
+                "zh-tw": "無法連線至伺服器，請重新整理後再試",
             };
             $('.ui.form').removeClass("loading");
             $('.button').addClass("disabled");
@@ -239,11 +239,11 @@ var app = new Vue({
         WarningMessage(){
             warning_title = {
                 "zh-cn": "数据异常说明",
-                "zh-tw": "數據異常説明",
+                "zh-tw": "資料異常説明",
             };
             warning_message = {
                 "zh-cn": "此前由于数据配置错误，导致35周目后没有切换至四阶段，从而周目与 Boss 编号等信息计算出错，自 2021/2/25 20:30 后的数据已恢复正常。",
-                "zh-tw": "此前由於數據配置錯誤，導致35周目後沒有切換至四階段，從而周目與 Boss 編號等信息計算出錯，自 2021/2/25 20:30 後的數據已恢復正常。",
+                "zh-tw": "此前由於資料設定錯誤，導致35週目後沒有切換至四階段，從而導致週目與 Boss 編號等資訊計算出錯，自 2021/2/25 20:30 後的資訊已恢復正常。",
             };
             $("#warning_messagebox").removeClass('hidden');
             $("#warning_title").text(warning_title[this.lang]);
