@@ -11,3 +11,5 @@
 demo page : https://kyaru.infedg.xyz/tw
 
 渠道服数据获取方式已开源，在项目 https://github.com/infinityedge01/qqbot2/tree/main/hoshino/modules/Luna 内，是 nonebot 插件的形式。
+
+Traditional Chinese Translated By [@TragicLifeHu](https://github.com/TragicLifeHu).
