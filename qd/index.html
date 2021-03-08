@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>PCR 台服公会战排名查询</title>
+    <title>PCR 渠道服公会战排名查询</title>
     <link rel="shortcut icon" type="image/x-icon" href="../107831.ico" />
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <!--script data-ad-client="ca-pub-8278251579038034" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script-->
@@ -16,7 +16,7 @@
 
     gtag('config', 'G-5KD1B4TGX3');
     </script>
-
+  
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
 
     <style id="font-ui">
@@ -73,13 +73,12 @@
     <div id="PCRClanBattleSearcher">
         <div class="ui borderless top fixed menu">
             <div class="ui container menu_container">
-
                 <a class="item" href="https://kyaru.infedg.xyz/tw"> <img src="../107831.ico">
                     &#12288;{{title[lang]}}</a>
                 <div class="right menu">
-                    <a class="item active current_rank"><i aria-hidden="true"
+                    <a class="item current_rank" v-bind:class = "{'active' : is_current}" @click = "changeToCurrent()"><i aria-hidden="true"
                             class="search icon"></i>{{text_dict.search_current_rank[lang]}}</a>
-                    <a class="item history_rank disabled"><i aria-hidden="true"
+                    <a class="item history_rank" v-bind:class = "{'active' : is_history}" @click = "changeToHistory()"><i aria-hidden="true"
                             class="calendar icon"></i>{{text_dict.search_history[lang]}}</a>
                     <a class="item" href="https://github.com/infinityedge01/Kyaru"><i aria-hidden="true"
                             class="github icon"></i>{{text_dict.github_link[lang]}}</a>
@@ -116,21 +115,14 @@
 
                 <div v-if = "update">
                     <h4 class="ui dividing header">{{text_dict.select_server_and_time[lang]}}</h4>
-                    <div class="field">
+                    <div class="field" v-if = "is_current">
                         <div class="ui grid">
-                            <div class="four wide column">
-                                <select class="ui fluid selection dropdown" id="selectedServer"
-                                    v-model="selectedServer">
-                                    <option v-for="(val, key, i) in dateTimeData" :value="key">{{ServerInfo[key][lang]}}
-                                    </option>
-                                </select>
-                            </div>
-                            <div class="four wide column">
+                            <div class="six wide column">
                                 <select class="ui fluid selection dropdown" id="selectedDate" v-model="selectedDate">
                                     <option v-for="(val, key, i) in TimeData" :value="key">{{parseDate(key)}}</option>
                                 </select>
                             </div>
-                            <div class="four wide column">
+                            <div class="six wide column">
                                 <select class="ui fluid selection dropdown" id="selectedTime" v-model="selectedTime">
                                     <option v-for="val in TimeData[selectedDate]" :value="val">{{parseTime(val)}}
                                     </option>
@@ -142,7 +134,19 @@
                             </div>
                         </div>
                     </div>
-
+                    <div class="field" v-else-if = "is_history">
+                        <div class="ui grid">
+                            <div class="twelve wide column">
+                                <select class="ui fluid selection dropdown" id="selectedHistory" v-model="selectedHistory">
+                                    <option v-for="(val, key, i) in historyData[selectedServer]" :value="val">{{val}}</option>
+                                </select>
+                            </div>
+                            <div class="four wide column">
+                                <div class="ui fluid primary button" @click="lastHistoryTime()">
+                                    {{text_dict.select_last_time[lang]}} </div>
+                            </div>
+                        </div>
+                    </div>
                     <h4 class="ui dividing header">{{text_dict.search_contents[lang]}}</h4>
                     <div class="ui grid">
                         <div class="twelve wide column">
@@ -210,7 +214,7 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.1.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
-    <script src="tw/index.js?v=0.1"></script>
+    <script src="qd/index.js?v=0.1"></script>
 
 </body>
 

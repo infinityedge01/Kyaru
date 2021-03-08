@@ -42,6 +42,7 @@ def search_scoreline():
         return jsonify(error_no_request_data)
     data = request.data.decode('utf-8')
     data = json.loads(data)
+    print(data)
     filename = data['filename']
     global readfile
     try:
@@ -54,7 +55,7 @@ def search_scoreline():
         return jsonify({"state": "fail", "error_code": -1, "error_title": "Error - Unexcepted Error", "error_message": sys.exc_info()[0]})
     df = readfile[filename].fillna(value = 'null')
     try:
-        dfa = df[df['rank'].isin([1, 2, 3, 20, 50, 150, 300, 700, 1300, 2500, 4000, 6000])]
+        dfa = df[df['rank'].isin([1, 2, 3, 20, 50, 100, 150, 300, 700, 1300, 2500, 4000, 6000])]
     except:
         return jsonify(error_regex_error)
     if dfa.shape[0] == 0:
@@ -70,6 +71,7 @@ def search_by_clan_name():
         return jsonify(error_no_request_data)
     data = request.data.decode('utf-8')
     data = json.loads(data)
+    print(data)
     filename = data['filename']
     global readfile
     try:
@@ -106,6 +108,7 @@ def search_by_leader_name():
         return jsonify(error_no_request_data)
     data = request.data.decode('utf-8')
     data = json.loads(data)
+    print(data)
     filename = data['filename']
     global readfile
     try:
@@ -142,6 +145,7 @@ def search_by_rank():
         return jsonify(error_no_request_data)
     data = request.data.decode('utf-8')
     data = json.loads(data)
+    print(data)
     filename = data['filename']
     global readfile
     try:
@@ -194,24 +198,37 @@ def getalltime_tw():
     ret_dict = {"state": "success", "data": data_dict}
     return jsonify(ret_dict)
 
-@app.route('/current/getalltime',methods=['get'])
-def getalltime():
-    lst = os.listdir('current')
+@app.route('/current/getalltime/qd',methods=['get'])
+def getalltime_qd():
     data_dict = {}
-    for x in lst:
-        date = x[:8]
-        time = x[8:12]
-        if date not in data_dict:
-            data_dict[date] = []
-        data_dict[date].append(time)
-    for key in data_dict:
-        data_dict[key] = sorted(data_dict[key])
+    for i in range(1, 2):
+        si = str(i)
+        lst = os.listdir('qd/' + si)
+        data_dict[si] = {}
+        for x in lst:
+            date = x[:8]
+            time = x[8:12]
+            if date not in data_dict[si]:
+                data_dict[si][date] = []
+            data_dict[si][date].append(time)
+        for key in data_dict[si]:
+            data_dict[si][key] = sorted(data_dict[si][key])
 
     ret_dict = {"state": "success", "data": data_dict}
-    #把区获取到的数据转为JSON格式。
     return jsonify(ret_dict)
-    #返回JSON数据。
- 
+
+@app.route('/history/getalltime/qd',methods=['get'])
+def getalltime_history_qd():
+    data_dict = {}
+    for i in range(1, 2):
+        si = str(i)
+        lst = os.listdir('qd/history/' + si)
+        data_dict[si] = []
+        for x in lst:
+            data_dict[si].append(x[:-4])
+        data_dict[si] = sorted(data_dict[si])
+    ret_dict = {"state": "success", "data": data_dict}
+    return jsonify(ret_dict)
 if __name__ == '__main__':
     app.run(host = '0.0.0.0', port=5088)
     #这里指定了地址和端口号。

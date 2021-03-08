@@ -9,8 +9,8 @@ var app = new Vue({
         },
         lang : "zh-cn",
         title : {
-            "zh-cn": "PCR 台服公会战排名查询",
-            "zh-tw": "公連台版戰隊競賽排名查詢",  
+            "zh-cn": "PCR 渠道服公会战排名查询",
+            "zh-tw": "公連渠道服戰隊競賽排名查詢",  
         },
         text_dict : {
             "search_current_rank" :{
@@ -30,8 +30,8 @@ var app = new Vue({
                 "zh-tw": "意見回饋",
             },
             "select_server_and_time" :{
-                "zh-cn": "查询区服/时间",
-                "zh-tw": "查詢伺服器/時間",
+                "zh-cn": "查询时间",
+                "zh-tw": "查詢時間",
             },
             "select_last_time" :{
                 "zh-cn": "选取最新数据",
@@ -162,6 +162,10 @@ var app = new Vue({
         favSelected: [],
         serverMsg: [],
         update : true,
+        is_current : true,
+        is_history : false,
+        historyData : {},
+        selectedHistory : "",
     },
     computed: {
         selectRange() {
@@ -248,8 +252,8 @@ var app = new Vue({
                 "zh-tw": "資料異常説明",
             };
             warning_message = {
-                "zh-cn": "此前由于数据配置错误，导致35周目后没有切换至四阶段，从而周目与 Boss 编号等信息计算出错，自 2021/2/25 20:30 后的数据已恢复正常。",
-                "zh-tw": "此前由於資料設定錯誤，導致35週目後沒有切換至四階段，從而導致週目與 Boss 編號等資訊計算出錯，自 2021/2/25 20:30 後的資訊已恢復正常。",
+                "zh-cn": "",
+                "zh-tw": "",
             };
             $("#warning_messagebox").removeClass('hidden');
             $("#warning_title").text(warning_title[this.lang]);
@@ -274,12 +278,29 @@ var app = new Vue({
         },
         loadTime() {
             $.ajax({
-                url: this.apiUrl + "/current/getalltime/tw",
+                url: this.apiUrl + "/current/getalltime/qd",
                 type: "GET",
                 dataType: "JSON",
                 async: true,
                 //data: JSON.stringify({ history: parseInt(this.nowHistoryTime) }),
                 success: this.processTimeData,
+                error: this.serverError,
+            });
+        },
+        processHistoryData(data) {        
+            this.historyData = data["data"];
+            this.unWatchSelectedServer = this.$watch('selectedServer', this.selectedServerChangeHandler);
+            $('.ui.form').removeClass("loading");
+            this.lastHistoryTime();
+        },
+        loadHistory() {
+            $.ajax({
+                url: this.apiUrl + "/history/getalltime/qd",
+                type: "GET",
+                dataType: "JSON",
+                async: true,
+                //data: JSON.stringify({ history: parseInt(this.nowHistoryTime) }),
+                success: this.processHistoryData,
                 error: this.serverError,
             });
         },
@@ -292,7 +313,13 @@ var app = new Vue({
             this.selectedTime = time;
             $('#selectedDate').dropdown('set selected', date);
             $('#selectedTime').dropdown('set selected', time);
-            this.unWatchSelectedDate = this.$watch('selectedDate', this.selectedDateChangeHandler);
+            this.unWatchSelectedDate = this.$watch('selectedDate', this.selectedDateChangeHandler)
+        },
+        lastHistoryTime() {
+            keys = this.historyData[this.selectedServer]
+            selecthistory = keys[keys.length - 1];
+            this.selectedHistory = selecthistory;
+            $('#selectedHistory').dropdown('set selected', selecthistory);
         },
         errorHandler(data){
             $("#error_messagebox").removeClass('hidden');
@@ -362,7 +389,11 @@ var app = new Vue({
             }        
             $('.ui.form').addClass("loading");
             this.allow = false;
-            this.searchData['filename'] = 'tw/' + this.selectedServer + '/' + this.selectedDate + this.selectedTime;
+            if(this.is_current){
+                this.searchData['filename'] = 'qd/' + this.selectedServer + '/' + this.selectedDate + this.selectedTime;
+            }else if(this.is_history){
+                this.searchData['filename'] = 'qd/history/' + this.selectedServer + '/' + this.selectedHistory;
+            }
             this.searchData['search'] = this.searchContents;
             this.searchData['page'] = 0;
             this.searchData['page_limit'] = this.pageinfo.limit
@@ -385,7 +416,11 @@ var app = new Vue({
             }        
             $('.ui.form').addClass("loading");
             this.allow = false;
-            this.searchData['filename'] = 'tw/' + this.selectedServer + '/' + this.selectedDate + this.selectedTime;
+            if(this.is_current){
+                this.searchData['filename'] = 'qd/' + this.selectedServer + '/' + this.selectedDate + this.selectedTime;
+            }else if(this.is_history){
+                this.searchData['filename'] = 'qd/history/' + this.selectedServer + '/' + this.selectedHistory;
+            }
             this.searchData['search'] = this.searchContents;
             this.searchData['page'] = 0;
             this.searchData['page_limit'] = this.pageinfo.limit
@@ -459,14 +494,59 @@ var app = new Vue({
             for(var key in this.TimeData){
                 this.selectedDate = key;
             }
-            $('#selectedDate').dropdown('set selected', this.selectedDate);
             this.selectedTime = this.TimeData[this.selectedDate][this.TimeData[this.selectedDate].length - 1];
+            this.update = false;
+            this.$nextTick(() => {
+                this.update = true;
+                this.$nextTick(() => {
+                    $('.ui.dropdown').dropdown();
+                });
+            });
+            $('#selectedDate').dropdown('set selected', this.selectedDate);
             $('#selectedTime').dropdown('set selected', this.selectedTime);
         },
         selectedDateChangeHandler(val) {
             this.selectedDate = val;
             this.selectedTime = this.TimeData[this.selectedDate][this.TimeData[this.selectedDate].length - 1];
+            console.log(this.selectedTime)
+            this.update = false;
+            this.$nextTick(() => {
+                this.update = true;
+                this.$nextTick(() => {
+                    $('.ui.dropdown').dropdown();
+                });
+            });
             $('#selectedTime').dropdown('set selected', this.selectedTime);
+        },
+        changeToCurrent(){
+            $('.ui.form').addClass("loading");
+            this.is_history = false;
+            this.is_current = true;
+            this.update = false;
+            this.$nextTick(() => {
+                this.update = true;
+                this.$nextTick(() => {
+                    $('.ui.dropdown').dropdown();
+                });
+            });
+            setTimeout(() => {
+                this.loadTime();
+            }, 300);
+        },
+        changeToHistory(){
+            $('.ui.form').addClass("loading");
+            this.is_current = false;
+            this.is_history = true;
+            this.update = false;
+            this.$nextTick(() => {
+                this.update = true;
+                this.$nextTick(() => {
+                    $('.ui.dropdown').dropdown();
+                });
+            });
+            setTimeout(() => {
+                this.loadHistory();
+            }, 300);
         },
     },
 });
